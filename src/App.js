@@ -17,7 +17,7 @@ class App extends Component {
 
   getData = () => {
     console.log("called")
-    axios.get(baseUrl + '/init').then(res => {
+    axios.get(baseUrl + '/status').then(res => {
       this.setState({ data: res.data })
     })
   }

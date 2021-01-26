@@ -21,8 +21,6 @@ class Room extends Component {
 
 
   render() {
-    console.log("1234");
-    console.log(process.env);
     const radioStyle = {
       margin: "15px",
       display: 'block',
@@ -34,8 +32,6 @@ class Room extends Component {
       backgroundColor: "rgb(46, 64, 89)",
     }
     const normalStyle = {}
-    console.log(this.props.name);
-    console.log(this.props.quietLevel);
 
     if (this.props.quietLevel === 4) {
       roomStyle = sleepStyle
