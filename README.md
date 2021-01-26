@@ -1,3 +1,7 @@
+## Running the web app
+`$ npm i` installing dependencies
+`$ make run-local` running the web app(using local environment)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
