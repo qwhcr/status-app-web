@@ -1,15 +1,13 @@
-import React, { Component } from "react";
-import { Col, Row } from 'antd';
-import { Radio } from 'antd';
-import { Typography } from 'antd'
-import { Card } from 'antd'
-import axios from "axios";
-import baseUrl from './appData'
-
-const { Title } = Typography;
+import React, {Component} from "react";
+import {Col, Row} from 'antd';
+import {Radio} from 'antd';
+import {Typography} from 'antd'
+import {Card} from 'antd'
+import TimeAgo from 'react-timeago'
+const {Title} = Typography;
 
 
-class Room extends Component {
+class Occupant extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,6 +15,62 @@ class Room extends Component {
       quietLevel: null,
       loading: false
     };
+  }
+
+  timeAgoFormatter = (e1, e2) => {
+    return e1 + " " + e2;
+  }
+
+  renderStatus = (radioStyle) => {
+    if (this.props.type === "currentUser") {
+      var selectedValue = 0;
+      for (; selectedValue < this.props.data.statuses.length; selectedValue++) {
+        if (this.props.data.statuses[selectedValue].selected === 1) {
+          break;
+        }
+      }
+      return (
+        <Radio.Group disabled={this.props.loading} buttonStyle="solid" value={selectedValue}
+          onChange={this.props.onStatusChange}
+        >
+          {
+            this.props.data.statuses.map((v, i) => {
+              if (i == selectedValue) {
+                return (
+                  <div>
+                    <Radio.Button value={i}
+                      style={radioStyle}>
+
+                      {v.status_name + " for "}
+                      <TimeAgo date={v.selected_at * 1000} formatter={this.timeAgoFormatter} />
+
+                    </Radio.Button>
+                  </div>
+                )
+              }
+              return (
+                <div>
+                  <Radio.Button value={i} style={radioStyle}>{v.status_name}</Radio.Button>
+                </div>
+              )
+            })
+          }
+        </Radio.Group>
+      )
+    } else if (this.props.type === "otherOccupant") {
+
+      return (
+        <Radio.Group disabled={this.props.loading} buttonStyle="solid" value={1}>
+          {
+            <div>
+              <Radio.Button value={1} style={radioStyle}>{this.props.data.status.status_name + " for "}
+                <TimeAgo date={this.props.data.status.selected_at * 1000} formatter={this.timeAgoFormatter} />
+              </Radio.Button>
+            </div>
+          }
+        </Radio.Group>
+      )
+    }
   }
 
 
@@ -38,38 +92,17 @@ class Room extends Component {
     } else {
       roomStyle = normalStyle
     }
+    var nickname = this.props.data != null ? this.props.data.nickname : "";
 
     return (
       <div>
         <Card loading={this.props.loading} style={roomStyle}>
           <Row type="flex" align="middle">
             <Col span={12}>
-              <Title>{this.props.name}</Title>
+              <Title>{nickname}</Title>
             </Col>
             <Col span={12}>
-              <Radio.Group disabled={this.state.loading} buttonStyle="solid" value={String(this.props.quietLevel)}
-                onChange={(e) => {
-                  this.setState({ loading: true });
-                  axios.get(baseUrl + '/update?name='
-                    + this.props.name
-                    + '&status='
-                    + e.target.value)
-                    .then((res) => { this.props.getData() }).then(this.setState({ loading: false }));
-                }}
-              >
-                <div>
-                  <Radio.Button value="1" style={radioStyle}>Away</Radio.Button>
-                </div>
-                <div>
-                  <Radio.Button value="2" style={radioStyle}>Working</Radio.Button>
-                </div>
-                <div>
-                  <Radio.Button value="3" style={radioStyle}>Chilling</Radio.Button>
-                </div>
-                <div>
-                  <Radio.Button value="4" style={radioStyle}>Sleeping</Radio.Button>
-                </div>
-              </Radio.Group>
+              {this.renderStatus(radioStyle)}
             </Col>
           </Row>
         </Card>
@@ -78,4 +111,4 @@ class Room extends Component {
   }
 }
 
-export default Room
+export default Occupant;
