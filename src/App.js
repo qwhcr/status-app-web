@@ -1,12 +1,6 @@
-import React, { Component } from 'react';
-//import './App.css';
-import { Button } from 'antd'
-import { Col, Row } from 'antd';
-import axios from 'axios'
-import TimeAgo from 'react-timeago'
+import React from 'react';
 import Main from './Main/Main';
 import Join from './Join/Join';
-
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 const App = () => {
