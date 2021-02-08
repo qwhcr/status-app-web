@@ -5,33 +5,53 @@ import {Col, Row} from 'antd';
 import Occupant from './Room.js'
 import axios from 'axios'
 import TimeAgo from 'react-timeago'
-import baseUrl from './appData'
+import baseUrl from '../appData'
+import Cookies from "js-cookie"
+import {Redirect} from 'react-router-dom';
 
 class Main extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
       data: null,
-      loading: true
+      loading: true,
+      token: Cookies.get("default"),
+      currentUser: Cookies.get("currentUser")
     }
   }
 
   getData = async () => {
-    let res = await axios.get(baseUrl + '/status?userid=' + 'demo@demo.com'
-      + '&roomid=' + 'ed91a75f-68e0-4cc2-b453-1bb61571fc11'
+    let res = await axios.get(baseUrl + '/status?userid=' + this.state.currentUser
+      + '&roomid=' + 'ed91a75f-68e0-4cc2-b453-1bb61571fc11',
+      {
+        headers: {
+          'Authorization': 'Bearer ' + this.state.token
+        }
+      }
     );
     if (res.status == 200) {
       this.setState({data: res.data, loading: false})
     }
+    if (res.status == 401) {
+      this.setState({token: null})
+    }
   }
 
   onStatusChange = async (e) => {
-    console.log(e.target.value)
-    let res = await axios.get(baseUrl + "/update?userid=" + "demo@demo.com"
+    let res = await axios.get(baseUrl + "/update?userid=" + this.state.currentUser
       + '&roomid=' + 'ed91a75f-68e0-4cc2-b453-1bb61571fc11' + '&statusname='
-      + this.state.data.current_user.statuses[e.target.value].status_name)
+      + this.state.data.current_user.statuses[e.target.value].status_name,
+      {
+        headers: {
+          'Authorization': 'Bearer ' + this.state.token
+        }
+      })
     if (res.status == 200) {
       await this.getData();
+    }
+    if (res.status == 401) {
+      this.setState({token: null})
     }
     return;
   }
@@ -63,8 +83,12 @@ class Main extends Component {
   }
 
   render() {
-    console.log("render main")
-    console.log(this.state)
+    if (this.state.token == null) {
+      Cookies.remove("default", {path: "/"});
+      return (
+        <Redirect to="/"/>
+      )
+    }
     if (this.state.data == null) {
       return (
         <div className="Main">
@@ -84,6 +108,11 @@ class Main extends Component {
               <Button shape="round" icon="reload" onClick={this.getData}>Refresh</Button>
             </Col>
           </Row>
+          <Button onClick={() => {
+            Cookies.remove("default", {path: "/"});
+            Cookies.remove("currentUser", {path: "/"});
+            this.setState({token: null})
+          }}> logout </Button>
         </div>
       );
     }
