@@ -1,6 +1,16 @@
 ## Running the web app
 `$ npm i` installing dependencies
 `$ make run-local` running the web app(using local environment)
+ Demo users: username: demo@demo.com password: demopwd ; username: demo2@demo.com password: demo2pwd
+
+## Features:
+ + Persistent user data through sqlite
+ + Automatic refresh of data
+ + Industry standard password hashing procedure (support ready for implementing frontend signup flow)
+ + Protected backend endpoints for protecting user data (Require authentication)
+ + Persistent client authentication session using JWT and Cookies
+ + HTTPS hosted on private AWS server on public domain: creat-ive.net.
+ + Multiple build enviroment for easy development. Easy swtich between local backend and production backend(`make run-prod`)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
